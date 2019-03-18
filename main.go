@@ -151,6 +151,8 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		return
 	}
 
+	logger.Infof("updated file [%s] in repo [%s]", filePath, owner+"/"+repoName)
+
 	return true
 }
 

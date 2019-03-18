@@ -138,7 +138,7 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 	}
 
 	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/" + owner + "/" + repoName + "/contents/" + filePath + "?access_token=" + ak).
-		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
+		Set("User-Agent", UserAgent).Timeout(2 * time.Minute).
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("update file [%s] failed: %s", filePath, errors[0])

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"math/rand"
 	"net/http"
 	"os"
@@ -42,7 +43,6 @@ func pushRepos(c *gin.Context) {
 	result.Code = CodeErr
 
 	ak := c.PostForm("ak")
-
 	user := user(ak)
 	if nil == user {
 		result.Msg = "get user failed"
@@ -66,12 +66,10 @@ func pushRepos(c *gin.Context) {
 		return
 	}
 
-	
-
-
-	name := c.PostForm("name")
-	description := c.PostForm("desc")
-	homepage := c.PostForm("homepage")
+	name := c.PostForm("repoName")
+	readme := c.PostForm("repoReadme")
+	description := c.PostForm("repoDesc")
+	homepage := c.PostForm("repoHomepage")
 
 	repo := createOrUpdateRepo(user, name, description, homepage)
 	if nil == repo {
@@ -80,6 +78,8 @@ func pushRepos(c *gin.Context) {
 
 		return
 	}
+
+	updateREADME(user, name, readme)
 
 	result.Code = CodeOk
 }
@@ -93,6 +93,48 @@ func main() {
 
 	logger.Infof("octocat is running")
 	server.ListenAndServe()
+}
+
+func updateREADME(user map[string]interface{}, name, readme string) {
+	ak := user["ak"].(string)
+	owner := user["login"].(string)
+
+	result := map[string]interface{}{}
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/" + owner + "/" + name + "/contents/README.md?access_token=" + ak).
+		Set("User-Agent", UserAgent).Timeout(5 * time.Second).EndStruct(&result)
+	if nil != errors {
+		logger.Errorf("update README failed: %s", errors[0])
+
+		return
+	}
+	if http.StatusOK != response.StatusCode && http.StatusNotFound != response.StatusCode {
+		logger.Errorf("update README status code: %d, body: %s", response.StatusCode, string(bytes))
+
+		return
+	}
+
+	content := base64.StdEncoding.EncodeToString([]byte(readme))
+	body := map[string]interface{}{
+		"message": ":memo: 更新博客",
+		"content": content,
+	}
+	if http.StatusOK == response.StatusCode {
+		body["sha"] = result["sha"]
+	}
+
+	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/" + owner + "/" + name + "/contents/README.md?access_token=" + ak).
+		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
+		SendMap(body).EndStruct(&result)
+	if nil != errors {
+		logger.Errorf("update README failed: %s", errors[0])
+
+		return
+	}
+	if http.StatusCreated != response.StatusCode && http.StatusUnprocessableEntity != response.StatusCode {
+		logger.Errorf("update README status code: %d, body: %s", response.StatusCode, string(bytes))
+
+		return
+	}
 }
 
 func createOrUpdateRepo(user map[string]interface{}, name, description, homepage string) (repo map[string]interface{}) {
@@ -109,33 +151,37 @@ func createOrUpdateRepo(user map[string]interface{}, name, description, homepage
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
-		logger.Errorf("create repo failed: %#v", errors[0])
+		logger.Errorf("create repo failed: %v", errors[0])
 
 		return nil
 	}
 	if http.StatusCreated != response.StatusCode && http.StatusUnprocessableEntity != response.StatusCode {
-		logger.Errorf("create repo status code: %d, body: ", response.StatusCode, string(bytes))
+		logger.Errorf("create repo status code: %d, body: %s", response.StatusCode, string(bytes))
 
 		return nil
 	}
+	if http.StatusCreated == response.StatusCode {
+		logger.Infof("created repo [%+v]", repo)
+
+		return
+	}
 
 	owner := user["login"].(string)
-
 	response, bytes, errors = gorequest.New().Patch("https://api.github.com/repos/" + owner + "/" + name + "?access_token=" + ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
-		logger.Errorf("create repo failed: %#v", errors[0])
+		logger.Errorf("create repo failed: %v", errors[0])
 
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("create repo status code: %d, body: ", response.StatusCode, string(bytes))
+		logger.Errorf("create repo status code: %d, body:  %s", response.StatusCode, string(bytes))
 
 		return nil
 	}
 
-	logger.Infof("created repo [%+v]", repo)
+	logger.Infof("updated repo [%+v]", repo)
 
 	return
 }
@@ -144,12 +190,12 @@ func user(ak string) (ret map[string]interface{}) {
 	response, bytes, errors := gorequest.New().Get("https://api.github.com/user?access_token=" + ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).EndStruct(&ret)
 	if nil != errors {
-		logger.Errorf("get user failed: %#v", errors[0])
+		logger.Errorf("get user failed: %v", errors[0])
 
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("get user status code: %d, body: ", response.StatusCode, string(bytes))
+		logger.Errorf("get user status code: %d, body:  %s", response.StatusCode, string(bytes))
 
 		return nil
 	}

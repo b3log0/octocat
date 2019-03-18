@@ -8,17 +8,11 @@
 <a title="Solo Version" target="_blank" href="https://github.com/b3log/solo/releases"><img src="https://img.shields.io/badge/solo-%3E%3D3.4.0-f1e05a.svg?style=flat-square"></a>
 </p>
 
-## 最近文章
+## 最新文章
 
 ## 热门文章
 
 ## 热议文章
-
-## 社区
-
-* [讨论区](https://hacpai.com/tag/solo)
-* [报告问题](https://github.com/b3log/solo/issues/new/choose)
-
 
 ## 鸣谢
 

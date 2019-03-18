@@ -3,12 +3,9 @@
 <br><br>
 88250 - 开源程序员，自由职业者
 <br><br>
-
+<a title="Solo" target="_blank" href="https://github.com/b3log/solo/releases"><img src="https://img.shields.io/github/last-commit/b3log/solo.svg?style=flat-square"></a>
 <a title="GitHub repo size in bytes" target="_blank" href="https://github/b3log/solo"><img src="https://img.shields.io/github/repo-size/b3log/solo.svg?style=flat-square"></a>
-<a title="AGPLv3" target="_blank" href="https://www.gnu.org/licenses/agpl-3.0.txt"><img src="http://img.shields.io/badge/license-AGPLv3-orange.svg?style=flat-square"></a>
-<a title="Solo" target="_blank" href="https://github.com/b3log/solo/releases"><img src="https://img.shields.io/badge/solo-%3E%3D3.4.0-d23f31.svg?style=flat-square"></a>
-<a title="Solo" target="_blank" href="https://github.com/b3log/solo/releases"><img src="https://img.shields.io/badge/solo-%3E%3D3.4.0-d23f31.svg?style=flat-square"></a>
-
+<a title="Solo Version" target="_blank" href="https://github.com/b3log/solo/releases"><img src="https://img.shields.io/badge/solo-%3E%3D3.4.0-f1e05a.svg?style=flat-square"></a>
 </p>
 
 ## 最近文章
@@ -25,4 +22,4 @@
 
 ## 鸣谢
 
-* [jQuery](https://github.com/jquery/jquery)：🎸 一款小而美的博客系统，专为程序员设计。
+* [Solo](https://github.com/b3log/solo)：🎸 一款小而美的博客系统，专为程序员设计。

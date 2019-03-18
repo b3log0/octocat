@@ -86,6 +86,7 @@ func pushRepos(c *gin.Context) {
 	repoReadme := c.PostForm("repoReadme")
 	repoDesc := c.PostForm("repoDesc")
 	repoHomepage := c.PostForm("repoHomepage")
+	toc := c.PostForm("toc")
 
 	repo := createOrUpdateRepo(user, repoName, repoDesc, repoHomepage)
 	if nil == repo {
@@ -97,6 +98,7 @@ func pushRepos(c *gin.Context) {
 
 	repoFullName := user["login"].(string) + "/" + repoName
 	repoReadme = strings.Replace(repoReadme, "${repoFullName}", repoFullName, -1)
+	repoReadme = strings.Replace(repoReadme, "${toc}", toc, -1)
 
 	ok := updateFile(user, repoName, "README.md", []byte(repoReadme))
 	if ok {

@@ -5,6 +5,7 @@
 *.test
 *.out
 .idea
+octocat
 
 # https://github.com/b3log/header
 header

@@ -95,6 +95,9 @@ func pushRepos(c *gin.Context) {
 		return
 	}
 
+	repoFullName := user["login"].(string) + "/" + repoName
+	repoReadme = strings.Replace(repoReadme, "${repoFullName}", repoFullName, -1)
+
 	ok := updateFile(user, repoName, "README.md", []byte(repoReadme))
 	if ok {
 		ok = updateFile(user, repoName, "backup.zip", fileData)
@@ -114,12 +117,12 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/" + owner + "/" + repoName + "/contents/" + filePath + "?access_token=" + ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).EndStruct(&result)
 	if nil != errors {
-		logger.Errorf("update README failed: %s", errors[0])
+		logger.Errorf("update [%s] failed: %s", filePath, errors[0])
 
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusNotFound != response.StatusCode {
-		logger.Errorf("update README status code: %d, body: %s", response.StatusCode, string(bytes))
+		logger.Errorf("update file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
 
 		return
 	}

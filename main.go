@@ -102,6 +102,8 @@ func pushRepos(c *gin.Context) {
 	if ok {
 		result.Code = CodeOk
 	}
+
+	c.JSON(http.StatusOK, result)
 }
 
 func updateFile(user map[string]interface{}, repoName, filePath string, content [] byte) (ok bool) {

@@ -116,15 +116,15 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 	owner := user["login"].(string)
 
 	result := map[string]interface{}{}
-	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/" + owner + "/" + repoName + "/contents/" + filePath + "?access_token=" + ak).
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/" + owner + "/" + repoName + "/git/trees/master?access_token=" + ak).
 		Set("User-Agent", UserAgent).Timeout(30 * time.Second).EndStruct(&result)
 	if nil != errors {
-		logger.Errorf("update [%s] failed: %s", filePath, errors[0])
+		logger.Errorf("get git tree of file [%s] failed: %s", filePath, errors[0])
 
 		return
 	}
-	if http.StatusOK != response.StatusCode && http.StatusNotFound != response.StatusCode {
-		logger.Errorf("update file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
+	if http.StatusOK != response.StatusCode && http.StatusConflict != response.StatusCode {
+		logger.Errorf("get git tree of file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
 
 		return
 	}
@@ -134,7 +134,14 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		"content": base64.StdEncoding.EncodeToString(content),
 	}
 	if http.StatusOK == response.StatusCode {
-		body["sha"] = result["sha"]
+		tree := result["tree"].([]interface{})
+		for _, f := range tree {
+			file := f.(map[string]interface{})
+			if filePath == file["path"].(string) {
+				body["sha"] = file["sha"]
+				break
+			}
+		}
 	}
 
 	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/" + owner + "/" + repoName + "/contents/" + filePath + "?access_token=" + ak).

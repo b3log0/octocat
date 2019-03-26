@@ -87,6 +87,10 @@ func pushRepos(c *gin.Context) {
 	repoDesc := c.PostForm("repoDesc")
 	repoHomepage := c.PostForm("repoHomepage")
 
+	owner := user["login"].(string)
+	repoFullName := owner + "/" + repoName
+	logger.Infof("pushing repo [%s]", repoFullName)
+
 	repo := createOrUpdateRepo(user, repoName, repoDesc, repoHomepage)
 	if nil == repo {
 		result.Msg = "create or update repo failed"
@@ -95,7 +99,6 @@ func pushRepos(c *gin.Context) {
 		return
 	}
 
-	repoFullName := user["login"].(string) + "/" + repoName
 	repoReadme = strings.Replace(repoReadme, "${repoFullName}", repoFullName, -1)
 
 	ok := updateFile(user, repoName, "README.md", []byte(repoReadme))
@@ -109,12 +112,12 @@ func pushRepos(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func updateFile(user map[string]interface{}, repoName, filePath string, content [] byte) (ok bool) {
+func updateFile(user map[string]interface{}, repoName, filePath string, content []byte) (ok bool) {
 	ak := user["ak"].(string)
 	owner := user["login"].(string)
 
 	result := map[string]interface{}{}
-	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/" + owner + "/" + repoName + "/git/trees/master?access_token=" + ak).
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/"+owner+"/"+repoName+"/git/trees/master?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(30 * time.Second).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("get git tree of file [%s] failed: %s", filePath, errors[0])
@@ -122,7 +125,7 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusConflict != response.StatusCode {
-		logger.Errorf("get git tree of file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
+		logger.Errorf("get git tree of file [%s] status code [%d], body [%s]", filePath, response.StatusCode, string(bytes))
 
 		return
 	}
@@ -142,7 +145,7 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		}
 	}
 
-	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/" + owner + "/" + repoName + "/contents/" + filePath + "?access_token=" + ak).
+	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/"+owner+"/"+repoName+"/contents/"+filePath+"?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(2 * time.Minute).
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
@@ -171,7 +174,7 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 
 	ak := user["ak"].(string)
 
-	response, bytes, errors := gorequest.New().Post("https://api.github.com/user/repos?access_token=" + ak).
+	response, bytes, errors := gorequest.New().Post("https://api.github.com/user/repos?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
@@ -180,7 +183,7 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 		return nil
 	}
 	if http.StatusCreated != response.StatusCode && http.StatusUnprocessableEntity != response.StatusCode {
-		logger.Errorf("create repo status code: %d, body: %s", response.StatusCode, string(bytes))
+		logger.Errorf("create repo [%s] status code [%d], body [%s]", repo["full_name"], response.StatusCode, string(bytes))
 
 		return nil
 	}
@@ -191,7 +194,7 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 	}
 
 	owner := user["login"].(string)
-	response, bytes, errors = gorequest.New().Patch("https://api.github.com/repos/" + owner + "/" + repoName + "?access_token=" + ak).
+	response, bytes, errors = gorequest.New().Patch("https://api.github.com/repos/"+owner+"/"+repoName+"?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
@@ -200,7 +203,7 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("create repo status code: %d, body:  %s", response.StatusCode, string(bytes))
+		logger.Errorf("create repo [%s] status code [%d], body [%s]", repo["full_name"], response.StatusCode, string(bytes))
 
 		return nil
 	}
@@ -211,7 +214,7 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 }
 
 func user(ak string) (ret map[string]interface{}) {
-	response, bytes, errors := gorequest.New().Get("https://api.github.com/user?access_token=" + ak).
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/user?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).EndStruct(&ret)
 	if nil != errors {
 		logger.Errorf("get user failed: %v", errors[0])
@@ -219,7 +222,7 @@ func user(ak string) (ret map[string]interface{}) {
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("get user status code: %d, body:  %s", response.StatusCode, string(bytes))
+		logger.Errorf("get user status code [%d], body [%s]", response.StatusCode, string(bytes))
 
 		return nil
 	}
@@ -236,32 +239,4 @@ func main() {
 
 	logger.Infof("octocat is running")
 	server.ListenAndServe()
-}
-
-func randStr(n int) string {
-	rand.Seed(time.Now().UTC().UnixNano())
-	time.Sleep(time.Nanosecond)
-
-	letter := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letter[rand.Intn(len(letter))]
-	}
-
-	return string(b)
-}
-
-func substrBetween(str, open, close string) string {
-	s := strings.Index(str, open)
-	if -1 == s {
-		return ""
-	}
-	if -1 == strings.Index(str, close) {
-		return ""
-	}
-
-	s += len(open)
-	ret := str[s:]
-
-	return ret[:strings.Index(ret, close)]
 }

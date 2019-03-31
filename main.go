@@ -115,9 +115,10 @@ func pushRepos(c *gin.Context) {
 func updateFile(user map[string]interface{}, repoName, filePath string, content []byte) (ok bool) {
 	ak := user["ak"].(string)
 	owner := user["login"].(string)
+	fullRepoName := owner + "/" + repoName
 
 	result := map[string]interface{}{}
-	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/"+owner+"/"+repoName+"/git/trees/master?access_token="+ak).
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/"+fullRepoName+"/git/trees/master?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(30 * time.Second).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("get git tree of file [%s] failed: %s", filePath, errors[0])
@@ -145,21 +146,21 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		}
 	}
 
-	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/"+owner+"/"+repoName+"/contents/"+filePath+"?access_token="+ak).
+	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/"+fullRepoName+"/contents/"+filePath+"?access_token="+ak).
 		Set("User-Agent", UserAgent).Timeout(2 * time.Minute).
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
-		logger.Errorf("update file [%s] failed: %s", filePath, errors[0])
+		logger.Errorf("update repo [%s] file [%s] failed: %s", fullRepoName, filePath, errors[0])
 
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusCreated != response.StatusCode {
-		logger.Errorf("update file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
+		logger.Errorf("update repo [%s] file [%s] status code: %d, body: %s", fullRepoName, filePath, response.StatusCode, string(bytes))
 
 		return
 	}
 
-	logger.Infof("updated file [%s] in repo [%s]", filePath, owner+"/"+repoName)
+	logger.Infof("updated repo [%s] file [%s]", fullRepoName, filePath)
 
 	return true
 }

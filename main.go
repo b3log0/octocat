@@ -234,7 +234,7 @@ func user(ak string) (ret map[string]interface{}) {
 func main() {
 	router := mapRoutes()
 	server := &http.Server{
-		Addr:    "0.0.0.0:1123",
+		Addr:    "127.0.0.1:1123",
 		Handler: router,
 	}
 

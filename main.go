@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/b3log/gulu"
 	"github.com/gin-gonic/gin"
 	"github.com/parnurzeal/gorequest"
 )
@@ -17,13 +18,13 @@ const (
 	UserAgent = "Octocat/1.0.0; +https://github.com/b3log/octocat"
 )
 
-var logger *Logger
+var logger *gulu.Logger
 
 func init() {
 	rand.Seed(time.Now().Unix())
 
-	SetLevel("info")
-	logger = NewLogger(os.Stdout)
+	gulu.Log.SetLevel("info")
+	logger = gulu.Log.NewLogger(os.Stdout)
 	gin.SetMode(gin.ReleaseMode)
 }
 
@@ -40,8 +41,8 @@ func mapRoutes() *gin.Engine {
 }
 
 func pushRepos(c *gin.Context) {
-	result := NewResult()
-	result.Code = CodeErr
+	result := gulu.Ret.NewResult()
+	result.Code = -1
 
 	ak := c.PostForm("ak")
 	user := user(ak)
@@ -106,7 +107,7 @@ func pushRepos(c *gin.Context) {
 		ok = updateFile(user, repoName, "backup.zip", fileData)
 	}
 	if ok {
-		result.Code = CodeOk
+		result.Code = 0
 	}
 
 	c.JSON(http.StatusOK, result)

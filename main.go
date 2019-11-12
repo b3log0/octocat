@@ -1,7 +1,21 @@
+// Octocat - B3log 的 GitHub 仓库操作服务
+// Copyright (c) 2019-present, b3log.org
+//
+// Lute is licensed under the Mulan PSL v1.
+// You can use this software according to the terms and conditions of the Mulan PSL v1.
+// You may obtain a copy of Mulan PSL v1 at:
+//     http://license.coscl.org.cn/MulanPSL
+// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
+// PURPOSE.
+// See the Mulan PSL v1 for more details.
+
 package main
 
 import (
 	"encoding/base64"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -111,6 +125,8 @@ func pushRepos(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+
+	blogs.Store(repoFullName, &blog{repoDesc, repoHomepage, repoFullName})
 }
 
 func updateFile(user map[string]interface{}, repoName, filePath string, content []byte) (ok bool) {
@@ -233,6 +249,11 @@ func user(ak string) (ret map[string]interface{}) {
 }
 
 func main() {
+	orgAk = *flag.String("ak", "", "")
+	fmt.Println("ak is [" + orgAk + "]")
+
+	go updateAwesomeSolo()
+
 	router := mapRoutes()
 	server := &http.Server{
 		Addr:    "127.0.0.1:1123",

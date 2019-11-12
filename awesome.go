@@ -31,7 +31,7 @@ type blog struct {
 
 var orgAk = ""
 
-var period = time.Hour * 6
+var period = time.Minute * 10
 
 func updateAwesomeSolo() {
 	if 1 > len(orgAk) {

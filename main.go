@@ -249,8 +249,12 @@ func user(ak string) (ret map[string]interface{}) {
 }
 
 func main() {
-	orgAk = *flag.String("ak", "", "")
-	fmt.Println("ak is [" + orgAk + "]")
+	orgAkArg := flag.String("ak", "", "")
+	flag.Parse()
+	if "" != *orgAkArg {
+		orgAk = *orgAkArg
+		fmt.Println("ak is [" + orgAk + "]")
+	}
 
 	go updateAwesomeSolo()
 

@@ -34,6 +34,10 @@ var orgAk = ""
 var period = time.Hour * 6
 
 func updateAwesomeSolo() {
+	if 1 > len(orgAk) {
+		return
+	}
+
 	for range time.Tick(period) {
 		updateAwesomeSoloRepo()
 		updateAwesomeSoloReadme()

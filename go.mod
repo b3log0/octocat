@@ -11,6 +11,7 @@ require (
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect

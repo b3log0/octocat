@@ -18,6 +18,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/microcosm-cc/bluemonday"
+
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -79,7 +81,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 	content := ""
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		content += "* [" + blog.title + "](" + blog.repo + ")  [:octocat:](" + blog.repo + ")\n"
+		content += "* [" + blog.title + "](" + blog.homepage + ")  [:octocat:](https://github.com/" + blog.repo + ")\n"
 
 		return true
 	})
@@ -87,6 +89,8 @@ func updateAwesomeSoloReadme() (ok bool) {
 	if 1 > len(content) {
 		return
 	}
+
+	content = bluemonday.UGCPolicy().Sanitize(content)
 
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 

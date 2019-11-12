@@ -106,7 +106,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 	now := time.Now()
 	pattern := "2006-01-02 15:04:05"
 	body := map[string]interface{}{
-		"message": ":memo: 定时刷新 " + now.Format(pattern) + "，下次刷新时间为 " + now.Add(period).Format(pattern),
+		"message": ":memo: 定时更新 " + now.Format(pattern) + "，下次刷新时间为 " + now.Add(period).Format(pattern),
 		"content": base64.StdEncoding.EncodeToString([]byte(content)),
 	}
 	if http.StatusOK == response.StatusCode {

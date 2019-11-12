@@ -79,7 +79,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 	content := ""
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		content += "* [" + blog.title + "](" + blog.repo + ") [:octocat:](" + blog.repo + "]\n"
+		content += "* [" + blog.title + "](" + blog.repo + ")  [:octocat:](" + blog.repo + ")\n"
 
 		return true
 	})

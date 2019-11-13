@@ -14,6 +14,7 @@ package main
 
 import (
 	"encoding/base64"
+	"github.com/b3log/gulu"
 	"net/http"
 	"strings"
 	"sync"
@@ -50,6 +51,8 @@ func updateAwesomeSolo() {
 }
 
 func updateAwesomeSoloRepo() (repo map[string]interface{}) {
+	gulu.Panic.Recover(nil)
+
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
 		"description": "🎸 展示大家漂亮的 Solo 博客！",
@@ -77,6 +80,8 @@ func updateAwesomeSoloRepo() (repo map[string]interface{}) {
 }
 
 func updateAwesomeSoloReadme() (ok bool) {
+	gulu.Panic.Recover(nil)
+
 	result := map[string]interface{}{}
 	filePath := "README.md"
 	content := "本仓库用于展示 [Solo](https://solo.b3log.org) 用户的站点，通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿直接发起 PR！\n\n"

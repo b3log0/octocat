@@ -30,6 +30,8 @@ type blog struct {
 	title    string // D 的个人博客 - 开源程序员，自由职业者
 	homepage string // https://88250.b3log.org
 	repo     string // 88250/solo-blog
+	favicon  string
+	stat     string
 }
 
 var orgAk = ""
@@ -78,22 +80,18 @@ func updateAwesomeSoloReadme() (ok bool) {
 	result := map[string]interface{}{}
 	filePath := "README.md"
 	content := "本仓库用于展示 [Solo](https://solo.b3log.org) 用户的站点，通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿直接发起 PR！\n\n"
-	content += "| 博客名和标题 | 链接地址 | GitHub 仓库 |\n"
-	content += "| --- | --- | --- |\n"
+	content += "| 站点图标 | 站点标题 | 链接地址 | 仓库 |\n"
+	content += "| --- | --- | --- | --- |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		title := bluemonday.UGCPolicy().Sanitize(blog.title)
-		title = strings.ReplaceAll(title, "\n", " ")
-		title = strings.ReplaceAll(title, "|", "\\|")
+		title := sanitize(blog.title)
 		runes := []rune(title)
 		if 32 <= len(runes) {
 			title = string(runes[:32])
 		}
-		homepage := bluemonday.UGCPolicy().Sanitize(blog.homepage)
-		homepage = strings.ReplaceAll(homepage, "\n", " ")
-		homepage = strings.ReplaceAll(homepage, "|", "\\|")
-		content += "|" + title + "|" + homepage + "|" + "[:octocat:](https://github.com/" + blog.repo + ")|\n"
-
+		homepage := sanitize(blog.homepage)
+		favicon := sanitize(blog.favicon)
+		content += "| ![favicon](" + favicon + ") | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
 		return true
 	})
 
@@ -153,4 +151,12 @@ func updateAwesomeSoloReadme() (ok bool) {
 	logger.Infof("updated repo [b3log/awesome-solo] file [%s]", filePath)
 
 	return true
+}
+
+func sanitize(str string) (ret string) {
+	ret = bluemonday.UGCPolicy().Sanitize(str)
+	ret = strings.ReplaceAll(ret, "\n", " ")
+	ret = strings.ReplaceAll(ret, "|", "\\|")
+	ret = strings.TrimSpace(ret)
+	return
 }

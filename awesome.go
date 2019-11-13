@@ -53,7 +53,6 @@ func updateAwesomeSoloRepo() (repo map[string]interface{}) {
 		"description": "🎸 展示大家漂亮的 Solo 博客！",
 		"has_wiki":    false,
 		"has_issues":  true,
-		"private":     true,
 	}
 
 	response, bytes, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).

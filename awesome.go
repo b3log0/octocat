@@ -50,7 +50,7 @@ func updateAwesomeSolo() {
 func updateAwesomeSoloRepo() (repo map[string]interface{}) {
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": "展示大家漂亮的 Solo 博客！",
+		"description": "🎸 展示大家漂亮的 Solo 博客！",
 		"has_wiki":    false,
 		"has_issues":  true,
 		"private":     true,

@@ -37,7 +37,7 @@ type blog struct {
 
 var orgAk = ""
 
-var period = time.Minute * 10
+var period = time.Hour * 25
 
 func updateAwesomeSolo() {
 	if 1 > len(orgAk) {
@@ -84,8 +84,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 
 	result := map[string]interface{}{}
 	filePath := "README.md"
-	content := "本仓库用于展示 [Solo](https://solo.b3log.org) 用户的站点，通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿直接发起 PR！\n\n"
-	content += "| 站点图标 | 站点标题 | 链接地址 | 仓库 |\n"
+	content := "| 站点图标 | 站点标题 | 链接地址 | 仓库 |\n"
 	content += "| :---: | --- | --- | :---: |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
@@ -113,7 +112,8 @@ func updateAwesomeSoloReadme() (ok bool) {
 	}
 
 	content += "\n注：\n\n"
-	content += "* 排列顺序是随机的"
+	content += "* 排列顺序是随机的\n"
+	content += "* 通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿 PR"
 
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 

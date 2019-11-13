@@ -76,7 +76,7 @@ func pushRepos(c *gin.Context) {
 
 	owner := user["login"].(string)
 	repoFullName := owner + "/" + repoName
-	logger.Infof("pushing repo [%s]", repoFullName)
+	//logger.Infof("pushing repo [%s]", repoFullName)
 
 	repo := createOrUpdateRepo(user, repoName, repoDesc, repoHomepage)
 	if nil == repo {
@@ -149,7 +149,7 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		return
 	}
 
-	logger.Infof("updated repo [%s] file [%s]", fullRepoName, filePath)
+	//logger.Infof("updated repo [%s] file [%s]", fullRepoName, filePath)
 
 	return true
 }

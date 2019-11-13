@@ -91,7 +91,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 		}
 		homepage := sanitize(blog.homepage)
 		favicon := sanitize(blog.favicon)
-		content += "| <img src=\"" + favicon + "\" width=\"32px;\"/> | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
+		content += "| <img src=\"" + favicon + "\" width=\"32px\"/> | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
 		return true
 	})
 

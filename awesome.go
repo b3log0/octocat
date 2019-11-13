@@ -78,13 +78,17 @@ func updateAwesomeSoloRepo() (repo map[string]interface{}) {
 func updateAwesomeSoloReadme() (ok bool) {
 	result := map[string]interface{}{}
 	filePath := "README.md"
-
-	content := "| 标题 | 地址 | 仓库 |\n"
+	content := "本仓库用于展示 [Solo](https://solo.b3log.org) 用户的站点。系统会自动定时刷新，请勿 PR。\n\n"
+	content += "| 博客名和标题 | 链接地址 | GitHub 仓库 |\n"
 	content += "| --- | --- | --- |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
 		title := bluemonday.UGCPolicy().Sanitize(blog.title)
 		title = strings.ReplaceAll(title, "\n", " ")
+		runes := []rune(title)
+		if 32 <= len(runes) {
+			title = string(runes[:32])
+		}
 		homepage := bluemonday.UGCPolicy().Sanitize(blog.homepage)
 		homepage = strings.ReplaceAll(homepage, "\n", " ")
 		content += "|" + title + "|" + homepage + "|" + "[:octocat:](https://github.com/" + blog.repo + ")|\n"

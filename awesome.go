@@ -14,14 +14,14 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/b3log/gulu"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
+	"github.com/b3log/gulu"
 	"github.com/microcosm-cc/bluemonday"
-
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -89,7 +89,12 @@ func updateAwesomeSoloReadme() (ok bool) {
 	content += "| :---: | --- | --- | :---: |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		title := sanitize(blog.title)
+		title := blog.title
+		document, err := goquery.NewDocumentFromReader(strings.NewReader(title))
+		if nil == err {
+			title = document.Text()
+		}
+		title = sanitize(title)
 		runes := []rune(title)
 		if 32 <= len(runes) {
 			title = string(runes[:32])

@@ -85,12 +85,14 @@ func updateAwesomeSoloReadme() (ok bool) {
 		blog := value.(*blog)
 		title := bluemonday.UGCPolicy().Sanitize(blog.title)
 		title = strings.ReplaceAll(title, "\n", " ")
+		title = strings.ReplaceAll(title, "|", "\\|")
 		runes := []rune(title)
 		if 32 <= len(runes) {
 			title = string(runes[:32])
 		}
 		homepage := bluemonday.UGCPolicy().Sanitize(blog.homepage)
 		homepage = strings.ReplaceAll(homepage, "\n", " ")
+		homepage = strings.ReplaceAll(homepage, "|", "\\|")
 		content += "|" + title + "|" + homepage + "|" + "[:octocat:](https://github.com/" + blog.repo + ")|\n"
 
 		return true

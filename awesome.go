@@ -86,7 +86,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 	filePath := "README.md"
 	content := "本仓库用于展示 [Solo](https://solo.b3log.org) 用户的站点，通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿直接发起 PR！\n\n"
 	content += "| 站点图标 | 站点标题 | 链接地址 | 仓库 |\n"
-	content += "| --- | --- | --- | --- |\n"
+	content += "| :---: | --- | --- | :---: |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
 		title := sanitize(blog.title)

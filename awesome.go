@@ -102,6 +102,9 @@ func updateAwesomeSoloReadme() (ok bool) {
 		return
 	}
 
+	content += "\n注：\n\n"
+	content += "* 排列顺序是随机的"
+
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 
 	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/b3log/awesome-solo/git/trees/master?access_token="+orgAk).

@@ -15,6 +15,7 @@ package main
 import (
 	"encoding/base64"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -78,10 +79,15 @@ func updateAwesomeSoloReadme() (ok bool) {
 	result := map[string]interface{}{}
 	filePath := "README.md"
 
-	content := ""
+	content := "| 标题 | 地址 | 仓库 |\n"
+	content += "| --- | --- | --- |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		content += "* [" + blog.title + "](" + blog.homepage + ")  [:octocat:](https://github.com/" + blog.repo + ")\n"
+		title := bluemonday.UGCPolicy().Sanitize(blog.title)
+		title = strings.ReplaceAll(title, "\n", " ")
+		homepage := bluemonday.UGCPolicy().Sanitize(blog.homepage)
+		homepage = strings.ReplaceAll(homepage, "\n", " ")
+		content += "|" + title + "|" + homepage + "|" + "[:octocat:](https://github.com/" + blog.repo + ")|\n"
 
 		return true
 	})
@@ -89,8 +95,6 @@ func updateAwesomeSoloReadme() (ok bool) {
 	if 1 > len(content) {
 		return
 	}
-
-	content = bluemonday.UGCPolicy().Sanitize(content)
 
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 

@@ -103,6 +103,9 @@ func updateAwesomeSoloReadme() (ok bool) {
 			title = title[:len(title)-1]
 			title = strings.TrimSpace(title)
 		}
+		if 1 > len(title) {
+			return true
+		}
 		homepage := sanitize(blog.homepage)
 		favicon := sanitize(blog.favicon)
 		if 0 < len(favicon) {

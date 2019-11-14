@@ -37,7 +37,7 @@ type blog struct {
 
 var orgAk = ""
 
-var period = time.Hour * 25
+var period = time.Minute * 10
 
 func updateAwesomeSolo() {
 	if 1 > len(orgAk) {
@@ -96,12 +96,20 @@ func updateAwesomeSoloReadme() (ok bool) {
 		title = sanitize(title)
 		runes := []rune(title)
 		if 32 <= len(runes) {
-			title = string(runes[:32])
+			title = string(runes[:28])
+		}
+		title = strings.TrimSpace(title)
+		if strings.HasSuffix(title, "-") {
+			title = title[:len(title)-1]
+			title = strings.TrimSpace(title)
 		}
 		homepage := sanitize(blog.homepage)
 		favicon := sanitize(blog.favicon)
 		if 0 < len(favicon) {
 			favicon = "<img src=\"" + favicon + "\" width=\"24px\"/>"
+		}
+		if strings.Contains(favicon, "solo-") {
+			favicon = ""
 		}
 		content += "| " + favicon + " | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
 		return true

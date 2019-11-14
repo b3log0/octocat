@@ -110,6 +110,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 		favicon := sanitize(blog.favicon)
 		if 0 < len(favicon) {
 			favicon = "<img src=\"" + favicon + "\" width=\"24px\"/>"
+			favicon = strings.ReplaceAll(favicon, "/interlace/0", "")
 		}
 		if strings.Contains(favicon, "solo-") {
 			favicon = ""

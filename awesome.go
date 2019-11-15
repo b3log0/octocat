@@ -15,7 +15,6 @@ package main
 import (
 	"encoding/base64"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -61,12 +60,9 @@ func updateAwesomeSoloNow() {
 func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 	gulu.Panic.Recover(nil)
 
-	desc := "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈"
-	logger.Info(desc)
-
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": desc,
+		"description": "🎸 展示大家漂亮的 Solo 博客！",
 		"has_wiki":    false,
 		"has_issues":  true,
 	}
@@ -76,17 +72,14 @@ func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
 		logger.Errorf("update repo failed: %v", errors[0])
-
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
 		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, string(bytes))
-
 		return nil
 	}
 
 	logger.Infof("updated repo [b3log/awesome-solo]")
-
 	return
 }
 
@@ -176,12 +169,10 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("update repo [b3log/awesome-solo] file [%s] failed: %s", filePath, errors[0])
-
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusCreated != response.StatusCode {
 		logger.Errorf("update repo [b3log/awesome-solo] file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
-
 		return
 	}
 

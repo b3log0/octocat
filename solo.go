@@ -33,7 +33,6 @@ func pushRepos(c *gin.Context) {
 	if nil == user {
 		result.Msg = "get user failed"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 	user["ak"] = ak
@@ -42,13 +41,11 @@ func pushRepos(c *gin.Context) {
 	if nil != err {
 		result.Msg = "get file failed"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 	if 128 > file.Size {
 		result.Msg = "file is too small"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 
@@ -56,14 +53,12 @@ func pushRepos(c *gin.Context) {
 	if nil != err {
 		result.Msg = "read file failed"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 	fileData, err := ioutil.ReadAll(f)
 	if nil != err {
 		result.Msg = "read file data failed"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 
@@ -82,7 +77,6 @@ func pushRepos(c *gin.Context) {
 	if nil == repo {
 		result.Msg = "create or update repo failed"
 		c.JSON(http.StatusOK, result)
-
 		return
 	}
 
@@ -111,12 +105,10 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		Set("User-Agent", UserAgent).Timeout(30 * time.Second).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("get git tree of file [%s] failed: %s", filePath, errors[0])
-
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusConflict != response.StatusCode {
 		logger.Errorf("get git tree of file [%s] status code [%d], body [%s]", filePath, response.StatusCode, string(bytes))
-
 		return
 	}
 
@@ -140,12 +132,10 @@ func updateFile(user map[string]interface{}, repoName, filePath string, content 
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("update repo [%s] file [%s] failed: %s", fullRepoName, filePath, errors[0])
-
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusCreated != response.StatusCode {
 		logger.Errorf("update repo [%s] file [%s] status code: %d, body: %s", fullRepoName, filePath, response.StatusCode, string(bytes))
-
 		return
 	}
 
@@ -169,17 +159,14 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
 		logger.Errorf("create repo failed: %v", errors[0])
-
 		return nil
 	}
 	if http.StatusCreated != response.StatusCode && http.StatusUnprocessableEntity != response.StatusCode {
 		logger.Errorf("create repo [%s] status code [%d], body [%s]", repo["full_name"], response.StatusCode, string(bytes))
-
 		return nil
 	}
 	if http.StatusCreated == response.StatusCode {
 		logger.Infof("created repo [%s]", repo["full_name"])
-
 		return
 	}
 
@@ -188,18 +175,15 @@ func createOrUpdateRepo(user map[string]interface{}, repoName, repoDesc, repoHom
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
-		logger.Errorf("create repo failed: %v", errors[0])
-
+		logger.Errorf("update repo failed: %v", errors[0])
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("create repo [%s] status code [%d], body [%s]", repo["full_name"], response.StatusCode, string(bytes))
-
+		logger.Errorf("update repo [%s] status code [%d], body [%s]", repo["full_name"], response.StatusCode, string(bytes))
 		return nil
 	}
 
 	logger.Infof("updated repo [%s]", repo["full_name"])
-
 	return
 }
 
@@ -208,14 +192,11 @@ func user(ak string) (ret map[string]interface{}) {
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).EndStruct(&ret)
 	if nil != errors {
 		logger.Errorf("get user failed: %v", errors[0])
-
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
 		logger.Errorf("get user status code [%d], body [%s]", response.StatusCode, string(bytes))
-
 		return nil
 	}
-
 	return
 }

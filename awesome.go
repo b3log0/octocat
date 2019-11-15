@@ -14,6 +14,7 @@ package main
 
 import (
 	"encoding/base64"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"strings"
@@ -38,7 +39,7 @@ type blog struct {
 
 var orgAk = ""
 
-var period = time.Minute * 10
+var period = time.Hour * 6
 
 func updateAwesomeSolo() {
 	if 1 > len(orgAk) {
@@ -46,10 +47,14 @@ func updateAwesomeSolo() {
 	}
 
 	for range time.Tick(period) {
-		ok, blogCount := updateAwesomeSoloReadme()
-		if ok {
-			updateAwesomeSoloRepo(blogCount)
-		}
+		updateAwesomeSoloNow()
+	}
+}
+
+func updateAwesomeSoloNow() {
+	ok, blogCount := updateAwesomeSoloReadme()
+	if ok {
+		updateAwesomeSoloRepo(blogCount)
 	}
 }
 
@@ -180,6 +185,11 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 	logger.Infof("updated repo [b3log/awesome-solo] file [%s]", filePath)
 	ok = true
 	return
+}
+
+func refreshAwesomeSolo(c *gin.Context) {
+	updateAwesomeSoloNow()
+	c.Status(200)
 }
 
 func sanitize(str string) (ret string) {

@@ -43,6 +43,7 @@ func mapRoutes() *gin.Engine {
 	ret.Use(gin.Recovery())
 
 	ret.POST("/github/repos/solo", pushRepos)
+	ret.GET("/awesome-solo", refreshAwesomeSolo)
 	ret.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusOK, "The piper will lead us to reason.\n\n欢迎访问黑客与画家的社区 https://hacpai.com")
 	})

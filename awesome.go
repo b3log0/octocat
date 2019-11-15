@@ -51,15 +51,14 @@ func updateAwesomeSolo() {
 }
 
 func updateAwesomeSoloNow() {
+	defer gulu.Panic.Recover(nil)
 	ok, blogCount := updateAwesomeSoloReadme()
 	if ok {
 		updateAwesomeSoloRepo(blogCount)
 	}
 }
 
-func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
-	gulu.Panic.Recover(nil)
-
+func updateAwesomeSoloRepo(blogCount int) {
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
 		"description": "🎸 展示大家漂亮的 Solo 博客！",
@@ -69,14 +68,14 @@ func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 
 	response, bytes, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
-		SendMap(body).EndStruct(&repo)
+		SendMap(body).End()
 	if nil != errors {
 		logger.Errorf("update repo failed: %v", errors[0])
-		return nil
+		return
 	}
 	if http.StatusOK != response.StatusCode {
 		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, string(bytes))
-		return nil
+		return
 	}
 
 	logger.Infof("updated repo [b3log/awesome-solo]")
@@ -84,8 +83,6 @@ func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 }
 
 func updateAwesomeSoloReadme() (ok bool, blogCount int) {
-	gulu.Panic.Recover(nil)
-
 	result := map[string]interface{}{}
 	filePath := "README.md"
 	content := "| 图标 | 标题 | 链接 | 仓库 |\n"

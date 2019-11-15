@@ -68,16 +68,18 @@ func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 		"has_issues":  true,
 	}
 
+	logger.Info("ak [" + orgAk + "]")
+
 	response, bytes, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).EndStruct(&repo)
 	if nil != errors {
-		logger.Errorf("create repo failed: %v", errors[0])
+		logger.Errorf("update repo failed: %v", errors[0])
 
 		return nil
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("create repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, string(bytes))
+		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, string(bytes))
 
 		return nil
 	}

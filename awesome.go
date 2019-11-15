@@ -15,6 +15,7 @@ package main
 import (
 	"encoding/base64"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -45,17 +46,19 @@ func updateAwesomeSolo() {
 	}
 
 	for range time.Tick(period) {
-		updateAwesomeSoloRepo()
-		updateAwesomeSoloReadme()
+		ok, blogCount := updateAwesomeSoloReadme()
+		if ok {
+			updateAwesomeSoloRepo(blogCount)
+		}
 	}
 }
 
-func updateAwesomeSoloRepo() (repo map[string]interface{}) {
+func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 	gulu.Panic.Recover(nil)
 
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": "🎸 展示大家漂亮的 Solo 博客！",
+		"description": "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈",
 		"has_wiki":    false,
 		"has_issues":  true,
 	}
@@ -79,12 +82,12 @@ func updateAwesomeSoloRepo() (repo map[string]interface{}) {
 	return
 }
 
-func updateAwesomeSoloReadme() (ok bool) {
+func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 	gulu.Panic.Recover(nil)
 
 	result := map[string]interface{}{}
 	filePath := "README.md"
-	content := "| 站点图标 | 站点标题 | 链接地址 | 仓库 |\n"
+	content := "| 图标 | 标题 | 链接 | 仓库 |\n"
 	content += "| :---: | --- | --- | :---: |\n"
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
@@ -96,7 +99,7 @@ func updateAwesomeSoloReadme() (ok bool) {
 		title = sanitize(title)
 		runes := []rune(title)
 		if 32 <= len(runes) {
-			title = string(runes[:28])
+			title = string(runes[:26])
 		}
 		title = strings.TrimSpace(title)
 		if strings.HasSuffix(title, "-") {
@@ -116,10 +119,11 @@ func updateAwesomeSoloReadme() (ok bool) {
 			favicon = ""
 		}
 		content += "| " + favicon + " | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
+		blogCount++
 		return true
 	})
 
-	if 1 > len(content) {
+	if 1 > blogCount {
 		return
 	}
 
@@ -174,8 +178,8 @@ func updateAwesomeSoloReadme() (ok bool) {
 	}
 
 	logger.Infof("updated repo [b3log/awesome-solo] file [%s]", filePath)
-
-	return true
+	ok = true
+	return
 }
 
 func sanitize(str string) (ret string) {

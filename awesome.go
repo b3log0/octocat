@@ -61,14 +61,15 @@ func updateAwesomeSoloNow() {
 func updateAwesomeSoloRepo(blogCount int) (repo map[string]interface{}) {
 	gulu.Panic.Recover(nil)
 
+	desc := "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈"
+	logger.Info(desc)
+
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈",
+		"description": desc,
 		"has_wiki":    false,
 		"has_issues":  true,
 	}
-
-	logger.Info("ak [" + orgAk + "]")
 
 	response, bytes, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).

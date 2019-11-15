@@ -15,6 +15,7 @@ package main
 import (
 	"encoding/base64"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -61,20 +62,20 @@ func updateAwesomeSoloNow() {
 func updateAwesomeSoloRepo(blogCount int) {
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": "🎸 展示大家漂亮的 Solo 博客！",
+		"description": "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈",
 		"has_wiki":    false,
 		"has_issues":  true,
 	}
 
-	response, bytes, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
+	response, str, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).End()
 	if nil != errors {
-		logger.Errorf("update repo failed: %v", errors[0])
+		logger.Errorf("update repo [b3log/awesome-solo] failed: %v", errors[0])
 		return
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, string(bytes))
+		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, str)
 		return
 	}
 

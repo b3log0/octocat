@@ -97,7 +97,7 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 		}
 		title = sanitize(title)
 		runes := []rune(title)
-		if 32 <= len(runes) {
+		if 26 <= len(runes) {
 			title = string(runes[:26])
 		}
 		title = strings.TrimSpace(title)

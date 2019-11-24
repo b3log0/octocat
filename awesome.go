@@ -62,16 +62,16 @@ func updateAwesomeSolo() {
 
 func updateAwesomeSoloNow() {
 	defer gulu.Panic.Recover(nil)
-	ok, blogCount := updateAwesomeSoloReadme()
+	ok, blogCount, articleCount := updateAwesomeSoloReadme()
 	if ok {
-		updateAwesomeSoloRepo(blogCount)
+		updateAwesomeSoloRepo(blogCount, articleCount)
 	}
 }
 
-func updateAwesomeSoloRepo(blogCount int) {
+func updateAwesomeSoloRepo(blogCount, articleCount int) {
 	body := map[string]interface{}{
 		"name":        "awesome-solo",
-		"description": "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点 📈",
+		"description": "🎸 展示大家漂亮的 Solo 博客！目前已收录 " + strconv.Itoa(blogCount) + " 个站点，共 " + strconv.Itoa(articleCount) + " 篇文章 📈",
 		"has_wiki":    false,
 		"has_issues":  true,
 	}
@@ -105,7 +105,7 @@ func sortAwesomeSolo() (ret blogSlice) {
 	return
 }
 
-func updateAwesomeSoloReadme() (ok bool, blogCount int) {
+func updateAwesomeSoloReadme() (ok bool, blogCount, articleCount int) {
 	solos := sortAwesomeSolo()
 	result := map[string]interface{}{}
 	filePath := "README.md"
@@ -142,6 +142,7 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 
 		content += "| " + favicon + " | " + title + " | " + homepage + "| " + fmt.Sprintf("%d", solo.articleCnt) + " | [:octocat:](https://github.com/" + solo.repo + ") |\n"
 		blogCount++
+		articleCount += solo.articleCnt
 	}
 
 	if 1 > blogCount {

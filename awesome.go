@@ -14,7 +14,9 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -30,12 +32,19 @@ import (
 var blogs = &sync.Map{} // "88250/solo-blog" -> *blog
 
 type blog struct {
-	title    string // D 的个人博客 - 开源程序员，自由职业者
-	homepage string // https://88250.b3log.org
-	repo     string // 88250/solo-blog
-	favicon  string
-	stat     string
+	title             string // D 的个人博客 - 开源程序员，自由职业者
+	homepage          string // https://88250.b3log.org
+	repo              string // 88250/solo-blog
+	favicon           string
+	articleCnt        int
+	recentArticleTime float64
 }
+
+type blogSlice []*blog
+
+func (s blogSlice) Len() int           { return len(s) }
+func (s blogSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s blogSlice) Less(i, j int) bool { return s[i].recentArticleTime > s[j].recentArticleTime }
 
 var orgAk = ""
 
@@ -83,14 +92,27 @@ func updateAwesomeSoloRepo(blogCount int) {
 	return
 }
 
-func updateAwesomeSoloReadme() (ok bool, blogCount int) {
-	result := map[string]interface{}{}
-	filePath := "README.md"
-	content := "| 图标 | 标题 | 链接 | 仓库 |\n"
-	content += "| :---: | --- | --- | :---: |\n"
+func sortAwesomeSolo() (ret blogSlice) {
 	blogs.Range(func(key, value interface{}) bool {
 		blog := value.(*blog)
-		title := blog.title
+		ret = append(ret, blog)
+		return true
+	})
+	sort.Sort(ret)
+	for _, blog := range ret {
+		fmt.Println(blog.title, blog.homepage, blog.recentArticleTime, blog.articleCnt)
+	}
+	return
+}
+
+func updateAwesomeSoloReadme() (ok bool, blogCount int) {
+	solos := sortAwesomeSolo()
+	result := map[string]interface{}{}
+	filePath := "README.md"
+	content := "| 图标 | 标题 | 链接 | 文章 | 仓库 |\n"
+	content += "| :---: | --- | --- | --- | :---: |\n"
+	for _, solo := range solos {
+		title := solo.title
 		document, err := goquery.NewDocumentFromReader(strings.NewReader(title))
 		if nil == err {
 			title = document.Text()
@@ -106,10 +128,10 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 			title = strings.TrimSpace(title)
 		}
 		if 1 > len(title) {
-			return true
+			continue
 		}
-		homepage := sanitize(blog.homepage)
-		favicon := sanitize(blog.favicon)
+		homepage := sanitize(solo.homepage)
+		favicon := sanitize(solo.favicon)
 		if 0 < len(favicon) {
 			favicon = "<img src=\"" + favicon + "\" width=\"24px\"/>"
 			favicon = strings.ReplaceAll(favicon, "/interlace/0", "")
@@ -117,18 +139,18 @@ func updateAwesomeSoloReadme() (ok bool, blogCount int) {
 		if strings.Contains(favicon, "solo-") {
 			favicon = ""
 		}
-		content += "| " + favicon + " | " + title + " | " + homepage + " | [:octocat:](https://github.com/" + blog.repo + ") |\n"
+
+		content += "| " + favicon + " | " + title + " | " + homepage + "| " + fmt.Sprintf("%d", solo.articleCnt) + " | [:octocat:](https://github.com/" + solo.repo + ") |\n"
 		blogCount++
-		return true
-	})
+	}
 
 	if 1 > blogCount {
 		return
 	}
 
 	content += "\n注：\n\n"
-	content += "* 排列顺序是随机的\n"
-	content += "* 通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿 PR"
+	content += "* 展示顺序按发布文章时间降序排列\n"
+	content += "* 通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿 PR\n"
 
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 

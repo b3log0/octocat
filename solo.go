@@ -14,6 +14,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -92,7 +93,16 @@ func pushRepos(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 
-	blogs.Store(repoFullName, &blog{repoDesc, repoHomepage, repoFullName, favicon, stat})
+	articleCnt := 0
+	recentArticleTime := 0.0
+	if "" != stat {
+		statMap := map[string]interface{}{}
+		if err := json.Unmarshal([]byte(stat), &statMap); nil == err {
+			articleCnt = statMap["articleCount"].(int)
+			recentArticleTime = statMap["recentArticleTime"].(float64)
+		}
+	}
+	blogs.Store(repoFullName, &blog{repoDesc, repoHomepage, repoFullName, favicon, articleCnt, recentArticleTime})
 }
 
 func updateFile(user map[string]interface{}, repoName, filePath string, content []byte) (ok bool) {

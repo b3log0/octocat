@@ -110,7 +110,7 @@ func updateAwesomeSoloReadme() (ok bool, blogCount, articleCount int) {
 	result := map[string]interface{}{}
 	filePath := "README.md"
 	content := "| 图标 | 标题 | 链接 | 文章 | 仓库 |\n"
-	content += "| :---: | --- | --- | --- | :---: |\n"
+	content += "| :---: | --- | --- | ---: | :---: |\n"
 	for _, solo := range solos {
 		title := solo.title
 		document, err := goquery.NewDocumentFromReader(strings.NewReader(title))

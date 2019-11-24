@@ -140,7 +140,11 @@ func updateAwesomeSoloReadme() (ok bool, blogCount, articleCount int) {
 			favicon = ""
 		}
 
-		content += "| " + favicon + " | " + title + " | " + homepage + "| " + fmt.Sprintf("%d", solo.articleCnt) + " | [:octocat:](https://github.com/" + solo.repo + ") |\n"
+		ac := fmt.Sprintf("%d", solo.articleCnt)
+		if "0" == ac {
+			ac = ""
+		}
+		content += "| " + favicon + " | " + title + " | " + homepage + "| " + ac + " | [:octocat:](https://github.com/" + solo.repo + ") |\n"
 		blogCount++
 		articleCount += solo.articleCnt
 	}

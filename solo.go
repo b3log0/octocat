@@ -93,12 +93,12 @@ func pushRepos(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 
-	articleCnt := 0
-	recentArticleTime := 0.0
+	var articleCnt int
+	var recentArticleTime uint64
 	statMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(stat), &statMap); nil == err {
-		articleCnt = statMap["articleCount"].(int)
-		recentArticleTime = statMap["recentArticleTime"].(float64)
+		articleCnt = int(statMap["articleCount"].(float64))
+		recentArticleTime = uint64(statMap["recentArticleTime"].(float64))
 	}
 	blogs.Store(repoFullName, &blog{repoDesc, repoHomepage, repoFullName, favicon, articleCnt, recentArticleTime})
 }

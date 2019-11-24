@@ -37,7 +37,7 @@ type blog struct {
 	repo              string // 88250/solo-blog
 	favicon           string
 	articleCnt        int
-	recentArticleTime float64
+	recentArticleTime uint64
 }
 
 type blogSlice []*blog

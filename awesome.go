@@ -76,19 +76,19 @@ func updateAwesomeSoloRepo(blogCount, articleCount int) {
 		"has_issues":  true,
 	}
 
-	response, str, errors := gorequest.New().Patch("https://api.github.com/repos/b3log/awesome-solo?access_token="+orgAk).
+	response, str, errors := gorequest.New().Patch("https://api.github.com/repos/88250/awesome-solo?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(5 * time.Second).
 		SendMap(body).End()
 	if nil != errors {
-		logger.Errorf("update repo [b3log/awesome-solo] failed: %v", errors[0])
+		logger.Errorf("update repo [88250/awesome-solo] failed: %v", errors[0])
 		return
 	}
 	if http.StatusOK != response.StatusCode {
-		logger.Errorf("update repo [b3log/awesome-solo] status code [%d], body [%s]", response.StatusCode, str)
+		logger.Errorf("update repo [88250/awesome-solo] status code [%d], body [%s]", response.StatusCode, str)
 		return
 	}
 
-	logger.Infof("updated repo [b3log/awesome-solo]")
+	logger.Infof("updated repo [88250/awesome-solo]")
 	return
 }
 
@@ -155,11 +155,11 @@ func updateAwesomeSoloReadme() (ok bool, blogCount, articleCount int) {
 
 	content += "\n注：\n\n"
 	content += "* 展示顺序按发布文章时间降序排列\n"
-	content += "* 通过 [Octocat](https://github.com/b3log/octocat) 自动定时刷新，请勿 PR\n"
+	content += "* 通过 [Octocat](https://github.com/88250/octocat) 自动定时刷新，请勿 PR\n"
 
 	logger.Info("[awesome-solo]'s README.md content is [" + content + "]")
 
-	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/b3log/awesome-solo/git/trees/master?access_token="+orgAk).
+	response, bytes, errors := gorequest.New().Get("https://api.github.com/repos/88250/awesome-solo/git/trees/master?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(30 * time.Second).EndStruct(&result)
 	if nil != errors {
 		logger.Errorf("get git tree of file [%s] failed: %s", filePath, errors[0])
@@ -189,19 +189,19 @@ func updateAwesomeSoloReadme() (ok bool, blogCount, articleCount int) {
 		}
 	}
 
-	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/b3log/awesome-solo/contents/"+filePath+"?access_token="+orgAk).
+	response, bytes, errors = gorequest.New().Put("https://api.github.com/repos/88250/awesome-solo/contents/"+filePath+"?access_token="+orgAk).
 		Set("User-Agent", UserAgent).Timeout(2 * time.Minute).
 		SendMap(body).EndStruct(&result)
 	if nil != errors {
-		logger.Errorf("update repo [b3log/awesome-solo] file [%s] failed: %s", filePath, errors[0])
+		logger.Errorf("update repo [88250/awesome-solo] file [%s] failed: %s", filePath, errors[0])
 		return
 	}
 	if http.StatusOK != response.StatusCode && http.StatusCreated != response.StatusCode {
-		logger.Errorf("update repo [b3log/awesome-solo] file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
+		logger.Errorf("update repo [88250/awesome-solo] file [%s] status code: %d, body: %s", filePath, response.StatusCode, string(bytes))
 		return
 	}
 
-	logger.Infof("updated repo [b3log/awesome-solo] file [%s]", filePath)
+	logger.Infof("updated repo [88250/awesome-solo] file [%s]", filePath)
 	ok = true
 	return
 }
